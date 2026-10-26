@@ -438,7 +438,9 @@ class JarifyGenerator(DuckDB.Generator):
             else:
                 # Non-aliased single-line columns count toward the alignment
                 # width so AS keywords clear the longest expression in the list.
-                col_sql = self.sql(e)
+                # Measure without comments, as expressions() renders the column:
+                # a comment after it or on its own line shouldn't move the AS.
+                col_sql = self.sql(e, comment=False)
                 if "\n" not in col_sql:
                     col_widths.append(len(col_sql))
 
