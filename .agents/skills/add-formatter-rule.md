@@ -79,6 +79,7 @@ Jarify overrides sqlglot's `DuckDB.Generator` to enforce its opinionated style. 
 | Scalar functions | varies | lowercase | `normalize_func()` |
 | Column expressions | trailing commas | leading commas | `expressions()` |
 | Bare `JOIN` | `JOIN` | `INNER JOIN` | rule in `rules/` |
+| `LEFT`/`RIGHT OUTER JOIN` | as written | `LEFT`/`RIGHT JOIN`; `LEFT`/`RIGHT OUTER JOIN` with `explicit_outer_join` | `join_sql()` |
 | `CASE WHEN x THEN y [ELSE z] END` | CASE WHEN form | `if(x, y[, z])` | `if_sql()` + rule in `rules/` |
 
 When adding a new override, add it to this table.
