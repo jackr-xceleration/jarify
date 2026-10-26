@@ -1839,13 +1839,19 @@ class JarifyGenerator(DuckDB.Generator):
         return f"{head}\n{self.indent(body_sql)}"
 
     def _is_lambda_function_arg(self, expression: exp.Lambda) -> bool:
-        # The lambda is always the second argument. An arrow anywhere else is
-        # JSON, e.g. the list in `list_transform(doc -> 'items', lambda x: …)`.
+        # The lambda follows the list. An arrow anywhere else is JSON, e.g. the
+        # list in `list_transform(doc -> 'items', lambda x: …)`.
         parent = expression.parent
         if isinstance(parent, (exp.Transform, exp.ArrayFilter)):
             return expression.arg_key == "expression"
+        if isinstance(parent, exp.Columns):
+            # COLUMNS(lambda c: …) selects the columns whose name matches.
+            return expression.arg_key == "this"
         if isinstance(parent, exp.Anonymous) and parent.name.lower() in self._LAMBDA_FUNCS:
-            return expression.index == 1
+            # In method-call syntax, `list.list_filter(lambda x: …)`, the list is
+            # the receiver, so the lambda is the first argument.
+            is_method_call = isinstance(parent.parent, exp.Dot) and parent.arg_key == "expression"
+            return expression.index == (0 if is_method_call else 1)
         return False
 
     # ------------------------------------------------------------------

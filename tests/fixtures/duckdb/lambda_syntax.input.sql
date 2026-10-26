@@ -5,6 +5,12 @@ SELECT
   ,list_filter(doc -> 'items', x -> x > 1) AS json_list_argument
   ,ifnull(doc -> 'name', 'unknown') AS json_outside_lambda_function
   ,my_macro(k, x -> x) AS user_macro_arrow
+  ,[first_name, last_name].list_filter(x -> x IS NOT NULL) AS method_call
+FROM t
+;
+
+SELECT
+   COLUMNS(col -> NOT regexp_matches(col, 'manager_'))
 FROM t
 ;
 

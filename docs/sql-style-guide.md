@@ -1130,7 +1130,7 @@ INNER JOIN fact_transactions ft ON o.id = ft.offer_id
 
 ### Lambdas — `lambda x: body`
 
-DuckDB deprecated the arrow lambda (`x -> body`) in favour of `lambda x: body`. Jarify writes the lambda argument of DuckDB's list functions (`list_transform`, `list_filter`, `list_reduce` and their `array_` and short aliases) in the `lambda` form, and spells `LAMBDA x : body` the same way. Several parameters take no parentheses.
+DuckDB deprecated the arrow lambda (`x -> body`) in favour of `lambda x: body`. Jarify writes the lambda argument of DuckDB's list functions (`list_transform`, `list_filter`, `list_reduce` and their `array_` and short aliases) in the `lambda` form, also in method-call syntax (`names.list_filter(lambda x: …)`), and the lambda in `COLUMNS(lambda c: …)`. It spells `LAMBDA x : body` the same way. Several parameters take no parentheses.
 
 Any other arrow is left as written, because DuckDB reads it as JSON extraction: `doc -> 'key'` in an `ifnull()`, in a list function's first argument, or in a call to a user-defined macro.
 
