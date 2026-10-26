@@ -640,6 +640,65 @@ FROM t
 
 ---
 
+### Several comments on one expression — one per line
+
+Nothing follows a `--` comment on its line, not even another comment. When several comments belong to one expression, the first stays after it and each of the others gets its own line.
+
+**Bad**
+```sql
+SELECT
+   a AS c -- first -- second
+  ,b
+FROM t
+;
+```
+
+**Good**
+```sql
+SELECT
+   a AS c -- first
+  -- second
+  ,b
+FROM t
+;
+```
+
+---
+
+### Block comments — lines kept as written
+
+Jarify places a multi-line `/* … */` comment like any other comment but never re-indents the lines inside it: they stay exactly as written, so commented-out SQL keeps its layout and formatting the file again changes nothing.
+
+**Bad** (each pass shifts the comment's lines two more columns)
+```sql
+,_managers AS
+(
+  SELECT
+     m.user_id AS root_user_id
+    ,u.active  AS user_active
+  /* add in for testing
+      ,u.manager_id AS direct_user_id
+      */
+  FROM _users m
+)
+```
+
+**Good**
+```sql
+,_managers AS
+(
+  SELECT
+     m.user_id AS root_user_id
+    ,u.active  AS user_active
+  /* add in for testing
+    ,u.manager_id AS direct_user_id
+    */
+  FROM _users m
+)
+```
+
+---
+
 ### Table aliases — `AS` omitted in `FROM`/`JOIN`, required in `SELECT`
 
 The `AS` keyword is kept for column aliases in `SELECT` lists but **omitted** between a table reference and its alias in `FROM` and `JOIN` lines.
@@ -1325,6 +1384,7 @@ SELECT
 FROM @read_parquet(@source_db, @source_schema, 'orders')
 ;
 ```
+
 
 ---
 
