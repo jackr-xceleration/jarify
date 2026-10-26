@@ -91,3 +91,34 @@ def test_init_mentions_min_column_alias(tmp_path: Path) -> None:
 
     assert result.exit_code == 0
     assert "min_column_alias" in starter
+
+
+def test_show_config_includes_alias_visual_guide_interval_when_set(tmp_path: Path) -> None:
+    config_file = tmp_path / "jarify.toml"
+    config_file.write_text("[jarify]\nalias-visual-guide-interval = 12\n")
+
+    with CliRunner().isolated_filesystem(temp_dir=tmp_path):
+        result = CliRunner().invoke(main, ["show-config", "--config", str(config_file)], catch_exceptions=False)
+
+    assert result.exit_code == 0
+    assert "alias_visual_guide_interval = 12" in result.output
+
+
+def test_show_config_omits_alias_visual_guide_interval_when_unset(tmp_path: Path) -> None:
+    config_file = tmp_path / "jarify.toml"
+    config_file.write_text("[jarify]\nindent = 2\n")
+
+    with CliRunner().isolated_filesystem(temp_dir=tmp_path):
+        result = CliRunner().invoke(main, ["show-config", "--config", str(config_file)], catch_exceptions=False)
+
+    assert result.exit_code == 0
+    assert "alias_visual_guide_interval" not in result.output
+
+
+def test_init_mentions_alias_visual_guide_interval(tmp_path: Path) -> None:
+    with CliRunner().isolated_filesystem(temp_dir=tmp_path):
+        result = CliRunner().invoke(main, ["init"], catch_exceptions=False)
+        starter = Path("jarify.toml").read_text()
+
+    assert result.exit_code == 0
+    assert "alias_visual_guide_interval" in starter
