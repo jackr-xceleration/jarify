@@ -658,3 +658,17 @@ class TestSQLMeshFormatting:
         assert not warnings
         assert not warnings2
         assert out == out2
+
+    def test_macro_statement_kept_as_written(self):
+        sql = "MODEL (name foo.bar);\n\n-- note\n@DEF(x,   1);\n\n\nselect @x as a\n"
+        out, warnings = format_sql(sql)
+        assert not warnings
+        assert out == "MODEL (name foo.bar);\n\n-- note\n@DEF(x,   1);\n\n\nSELECT\n   @x AS a\n;\n"
+
+    def test_macro_statement_sharing_a_line_with_sql_is_formatted(self):
+        sql = "MODEL (name foo.bar);\n@DEF(x, 1); select @x as a\n"
+        out, warnings = format_sql(sql)
+        out2, _ = format_sql(out)
+        assert not warnings
+        assert out == "MODEL (name foo.bar);\n@DEF(x, 1)\n;\n\nSELECT\n   @x AS a\n;\n"
+        assert out2 == out
