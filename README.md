@@ -112,7 +112,7 @@ When `--config PATH` is provided, that file wins and no discovery runs. Without 
    5. `~/jarify.toml`
 3. Built-in defaults
 
-When both project-local and global config exist, Jarify loads the global config first and overlays the project-local config on top. This lets global config hold personal defaults while project config still enforces repository policy. Explicit `--config PATH` is not merged with any other config.
+When both project-local and global config exist, Jarify loads the global config first and overlays the project-local config on top. Tables such as `[jarify.rules.*]` merge key by key; any other value, including a list such as `uppercase_functions`, is replaced as a whole by the project value. This lets global config hold personal defaults while project config still enforces repository policy. Explicit `--config PATH` is not merged with any other config.
 
 Project-local config is best for repository style rules that should be shared by every contributor:
 
@@ -128,6 +128,18 @@ Global config is useful for personal preferences that should not be committed to
 [jarify]
 indent = 4
 ```
+
+### Function name case
+
+Jarify writes aggregate and window functions uppercase and every other function lowercase. To override that for specific function names, list them (case-insensitively) in `uppercase_functions` or `lowercase_functions`:
+
+```toml
+[jarify]
+uppercase_functions = ["list"]          # always written uppercase
+lowercase_functions = ["any_value"]     # always written lowercase
+```
+
+A name in both lists is a config error. If a project config lists a name that global config puts in the other list, the project config wins. See [Function case overrides](docs/sql-style-guide.md#function-case-overrides) for examples.
 
 ## Style and lint rules
 
